@@ -123,6 +123,20 @@ public:
     virtual void onBuffersDiscarded(const std::vector<int32_t>& discardedSlots) override {
         return mBase->onBuffersDiscarded(discardedSlots);
     }
+
+#if COM_ANDROID_GRAPHICS_LIBGUI_FLAGS(BQ_CONSUMER_ATTACH_CALLBACK)
+    virtual void onBufferDetached(int slot) override {
+        mBase->onBufferDetached(slot);
+    }
+
+    virtual void onBufferAttached() override {
+        mBase->onBufferAttached();
+    }
+
+    virtual bool needsAttachNotify() override {
+        return mBase->needsAttachNotify();
+    }
+#endif
 };
 
 IMPLEMENT_HYBRID_META_INTERFACE(ProducerListener,
@@ -179,6 +193,10 @@ StubProducerListener::~StubProducerListener() = default;
 
 bool BnProducerListener::needsReleaseNotify() {
     return true;
+}
+
+void BnProducerListener::onBufferDetached(int slot) {
+    ALOGE("BnProducerListener::onBufferDetached slot: %d",slot);
 }
 
 void BnProducerListener::onBuffersDiscarded(const std::vector<int32_t>& /*discardedSlots*/) {

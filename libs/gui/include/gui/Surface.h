@@ -83,6 +83,9 @@ public:
     virtual bool needsReleaseNotify() { return false; }
     virtual void onBuffersDiscarded(const std::vector<sp<GraphicBuffer>>& /*buffers*/) override {}
     virtual void onBufferDetached(int /*slot*/) override {}
+    virtual void onBufferDetached(int /**slot**/) {
+        //default do nothing
+    }
 };
 
 #if COM_ANDROID_GRAPHICS_LIBGUI_FLAGS(WB_PLATFORM_API_IMPROVEMENTS)
@@ -485,6 +488,9 @@ protected:
         virtual void onBufferDetached(int slot) { mSurfaceListener->onBufferDetached(slot); }
 
         virtual void onBuffersDiscarded(const std::vector<int32_t>& slots);
+
+        virtual void onBufferDetached(int slot) {
+            mSurfaceListener->onBufferDetached(slot);
 #if COM_ANDROID_GRAPHICS_LIBGUI_FLAGS(BQ_CONSUMER_ATTACH_CALLBACK)
         virtual void onBufferAttached() {
             mSurfaceListener->onBufferAttached();

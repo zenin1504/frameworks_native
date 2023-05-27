@@ -48,7 +48,7 @@ public:
     // multiple threads.
     virtual void onBufferReleased() = 0; // Asynchronous
     virtual bool needsReleaseNotify() = 0;
-    // onBuffersFreed is called from IGraphicBufferConsumer::discardFreeBuffers
+    // onBuffersDiscarded is called from IGraphicBufferConsumer::discardFreeBuffers
     // to notify the producer that certain free buffers are discarded by the consumer.
     virtual void onBuffersDiscarded(const std::vector<int32_t>& slots) = 0; // Asynchronous
     // onBufferDetached is called from IGraphicBufferConsumer::detachBuffer to
@@ -90,8 +90,10 @@ public:
             Parcel* reply, uint32_t flags = 0);
     virtual bool needsReleaseNotify();
     virtual void onBuffersDiscarded(const std::vector<int32_t>& slots);
+    virtual void onBufferDetached(int slot);
 #if COM_ANDROID_GRAPHICS_LIBGUI_FLAGS(BQ_CONSUMER_ATTACH_CALLBACK)
     virtual bool needsAttachNotify();
+    virtual void onBufferAttached();
 #endif
 };
 
@@ -101,12 +103,16 @@ class IProducerListener : public ProducerListener {
 class BnProducerListener : public IProducerListener {
 };
 #endif
+
 class StubProducerListener : public BnProducerListener {
 public:
     virtual ~StubProducerListener();
     virtual void onBufferReleased() {}
     virtual bool needsReleaseNotify() { return false; }
+    virtual void onBuffersDiscarded(const std::vector<int32_t>& /*slots*/) {}
+    virtual void onBufferDetached(int /*slot*/) {}
 #if COM_ANDROID_GRAPHICS_LIBGUI_FLAGS(BQ_CONSUMER_ATTACH_CALLBACK)
+    virtual void onBufferAttached() {}
     virtual bool needsAttachNotify() { return false; }
 #endif
 };
